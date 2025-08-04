@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Link from 'next/link';
-
+import axios from 'axios';
 const schema = z.object({
   firstName: z.string().min(1, 'Vorname ist erforderlich'),
   lastName: z.string().min(1, 'Nachname ist erforderlich'),
@@ -19,9 +19,35 @@ export default function SignUp() {
     formState: { errors },
   } = useForm({ resolver: zodResolver(schema) });
 
-  function onSubmit(data) {
-    alert('Registrierung erfolgreich (mock)');
+  async function onSubmit(data) {
+    try {
+      const response = await axios.post(
+        'http://localhost:8080/api/auth/register/manager',  // use port 8080
+        {
+          first_name: data.firstName,
+          last_name: data.lastName,
+          email: data.email,
+          password: data.password,
+        }
+      );
+      
+      console.log('✅ Success Response:', response.data);
+      alert(response.data?.message || 'Registrierung erfolgreich!');
+    } catch (error) {
+      if (error.response) {
+        alert(error.response.data?.message || `Fehler: ${error.response.status}`);
+      } else if (error.request) {
+        console.error(error); // 👈 log it to browser console
+        alert("Keine Antwort vom Server erhalten.");
+      } else {
+        console.error(error); // 👈 log it to browser console
+        alert("Ein unbekannter Fehler ist aufgetreten.");
+      }
+    }
+    
+    
   }
+  
 
   return (
     <div className="max-w-md mx-auto mt-16 p-6 border rounded-lg shadow-lg bg-white">
@@ -71,9 +97,9 @@ export default function SignUp() {
         </button>
       </form>
       <p className="mt-4 text-center text-sm">
-        Schon ein Konto?{' '}
+        Do you have an account?{' '}
         <Link href="/signin" className="text-blue-600 hover:underline">
-          Anmelden
+          Login
         </Link>
       </p>
     </div>

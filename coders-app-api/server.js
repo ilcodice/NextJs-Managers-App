@@ -1,12 +1,27 @@
-require('dotenv').config({ path: '.env.local' });
+const express = require("express");
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");
+const cors = require("cors");
 
-const app = require('./app');
-const connectDB = require('./config/db');
+dotenv.config({ path: ".env.local" });
 
-const PORT = process.env.PORT || 3000;
+const authRoutes = require("./routes/authRoutes");
+const verifyEmailRoute = require('./routes/verify'); // Make sure filename matches!
 
-connectDB();
+const app = express();  // Create express app first!
 
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.use(cors());
+app.use(express.json());
+
+// Mount routes
+app.use("/api/auth", authRoutes);
+app.use("/api/auth", verifyEmailRoute);
+
+mongoose
+  .connect(process.env.MONGODB_URI, { dbName: "coders-app" })
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("MongoDB connection error:", err));
+
+app.listen(8080, () => {
+  console.log("Server is running on port 8080");
 });

@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   password:   { type: String, required: true },
   avatar:     { type: String },
   role:       { type: String, enum: ['coder', 'manager'], required: true },
+  is_verified: { type: Boolean, default: false },
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);
