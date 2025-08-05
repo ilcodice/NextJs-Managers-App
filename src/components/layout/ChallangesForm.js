@@ -20,24 +20,29 @@ export default function ChallengeForm() {
   const [description, setDescription] = useState('');
   const [tests, setTests] = useState(['']);
 
-  const onSubmit = (data) => {
-    const challenge = {
-      ...data,
-      code,
-      description,
-      tests,
-    };
-
-    // Post to backend (adjust as needed)
-    fetch('http://localhost:3001/challenges', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(challenge),
-    })
-      .then((res) => res.json())
-      .then(() => toast.success('Challenge saved!'))
-      .catch(() => toast.error('Error saving challenge.'));
+  const onSubmit = async (data) => {
+    try {
+      const challengeId = "123"; // Replace with the real ID (from props, state, router, etc.)
+  
+      const res = await fetch(`http://localhost:5000/api/challenges/${challengeId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (!res.ok) throw new Error("Failed to update challenge");
+  
+      const result = await res.json();
+      console.log("Challenge updated:", result);
+      alert("Challenge updated successfully!");
+    } catch (err) {
+      console.error("Update error:", err);
+      alert("Something went wrong.");
+    }
   };
+  
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 gap-4">

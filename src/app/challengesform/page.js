@@ -41,9 +41,26 @@ export default function ChallengeFormEdit() {
 
   const [tests, setTests] = useState([""]);
 
-  const onSubmit = (data) => {
-    console.log("Submitted:", data);
+  const onSubmit = async (data) => {
+    try {
+      const res = await fetch("/api/challenges/edit", {
+        method: "PUT", // or "POST" depending on your API
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
+  
+      if (!res.ok) throw new Error("Failed to update challenge");
+  
+      const result = await res.json();
+      console.log("Challenge updated:", result);
+      // Optionally redirect or show a message
+    } catch (err) {
+      console.error("Update error:", err);
+    }
   };
+  
 
   const handleAddTest = () => {
     const newTests = [...tests, ""];
